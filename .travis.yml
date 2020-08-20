@@ -1,4 +1,14 @@
 language: rust
-before_script: gem install awesome_bot
-# `crates.io` needs to be whitelisted, because of https://github.com/rust-lang/crates.io/issues/788
-script: awesome_bot -f README.md --allow-dupe --allow-ssl --white-list crates.io,sciter.com,cloudsmith.io
+before_script: sccache --version || cargo install sccache
+script: RUSTC_WRAPPER=sccache cargo run
+
+env:
+  global:
+    - RUST_LOG=warn
+    - SCCACHE_CACHE_SIZE=1G
+
+cache:
+  directories:
+    - ~/.cargo/bin
+    - ~/.cache/sccache
+    - results # So we don't have to check all the things every time
